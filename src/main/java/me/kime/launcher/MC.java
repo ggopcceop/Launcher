@@ -1,4 +1,4 @@
-package me.kime.mclancher;
+package me.kime.launcher;
 
 import java.awt.Graphics;
 import java.awt.Image;

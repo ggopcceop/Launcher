@@ -1,4 +1,4 @@
-package me.kime.mclancher;
+package me.kime.launcher;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
