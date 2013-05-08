@@ -41,13 +41,18 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 /**
+ * Util tool of Launcher
  *
  * @author Kime
  */
 public class LauncherUtil {
 
     /**
-     * @param args the command line arguments
+     * start minecraft program
+     *
+     * @param name the name of the player
+     * @throws IOException
+     * @throws InterruptedException
      */
     public static void start(String name) throws IOException, InterruptedException {
         String binFolder = MinecraftUtil.getBinFolder().getAbsolutePath();
@@ -65,6 +70,12 @@ public class LauncherUtil {
         Process p = b.start();
     }
 
+    /**
+     * read avatar from kime skin service
+     *
+     * @param name username of player
+     * @return avatar image of the player
+     */
     public static Image readAvatar(String name) {
         if (name == null || "".equals(name)) {
             name = "littleKime";
@@ -93,6 +104,12 @@ public class LauncherUtil {
         }
     }
 
+    /**
+     * read username of the player from lastLogin file
+     *
+     * @param username TextField to enther username
+     * @param passworld PassworldField to enther passworld
+     */
     public static void readUsername(JTextField username, JPasswordField passworld) {
         try {
             File lastLogin = MinecraftUtil.getLoginFile();
@@ -112,6 +129,13 @@ public class LauncherUtil {
         }
     }
 
+    /**
+     * write the current login information into lastLogin file
+     *
+     * @param username the name of the player
+     * @param passworld the passworld of the player
+     * @param rememberPassworld if is to remember the password
+     */
     public static void writeUsername(String username, String passworld, boolean rememberPassworld) {
         try {
             File lastLogin = MinecraftUtil.getLoginFile();
@@ -135,6 +159,13 @@ public class LauncherUtil {
         }
     }
 
+    /**
+     * method to auth the username and passworld to kime auth service
+     *
+     * @param username the name of the player
+     * @param passworld the passworld of the player
+     * @return if the auth succssce
+     */
     public static boolean authUser(String username, String passworld) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
