@@ -44,7 +44,7 @@ import javax.swing.JTextField;
  *
  * @author Kime
  */
-public class MC {
+public class LauncherUtil {
 
     /**
      * @param args the command line arguments
@@ -88,7 +88,7 @@ public class MC {
 
             return combined.getScaledInstance(128, 128, 0);
         } catch (IOException ex) {
-            Logger.getLogger(MC.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
@@ -108,7 +108,7 @@ public class MC {
             passworld.setText(dis.readUTF());
             dis.close();
         } catch (Exception e) {
-            Logger.getLogger(MC.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
+            Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
     }
 
@@ -131,7 +131,7 @@ public class MC {
             }
             dos.close();
         } catch (Exception e) {
-            Logger.getLogger(MC.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
+            Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
     }
 

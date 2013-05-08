@@ -40,11 +40,11 @@ public class Window extends javax.swing.JFrame {
 
         initComponents();
 
-        MC.readUsername(usernameField, passwordField);
+        LauncherUtil.readUsername(usernameField, passwordField);
         if (passwordField.getPassword().length != 0) {
             rememberPasswordCheckBox.setSelected(true);
         }
-        Image image = MC.readAvatar(usernameField.getText());
+        Image image = LauncherUtil.readAvatar(usernameField.getText());
         avatarLabel.setIcon(new ImageIcon(image));
     }
 
@@ -209,9 +209,9 @@ public class Window extends javax.swing.JFrame {
         try {
             String username = this.usernameField.getText();
             String password = new String(this.passwordField.getPassword());
-            if (MC.authUser(username, password)) {
-                MC.writeUsername(username, password, rememberPasswordCheckBox.isSelected());
-                MC.start(usernameField.getText());
+            if (LauncherUtil.authUser(username, password)) {
+                LauncherUtil.writeUsername(username, password, rememberPasswordCheckBox.isSelected());
+                LauncherUtil.start(usernameField.getText());
                 System.exit(0);
             }
         } catch (InterruptedException | IOException ex) {

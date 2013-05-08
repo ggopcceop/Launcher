@@ -167,7 +167,7 @@ public class MinecraftUtil {
             String str1 = response.toString();
             return str1;
         } catch (Exception e) {
-            Logger.getLogger(MC.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
+            Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
             return null;
         } finally {
             if (connection != null) {
