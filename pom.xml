@@ -12,11 +12,7 @@
         <resources>
             <resource>
                 <targetPath>.</targetPath>
-                <filtering>true</filtering>
                 <directory>${basedir}/src/main/resources/</directory>
-                <includes>
-                    <include>**/*.crt</include>
-                </includes>
             </resource>
         </resources>
         <plugins>
@@ -77,5 +73,4 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
 </project>
