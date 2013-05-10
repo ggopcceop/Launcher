@@ -113,7 +113,7 @@ public class MinecraftUtil {
         return workingDirectory;
     }
 
-    private static OS getPlatform() {
+    public static OS getPlatform() {
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("win")) {
             return OS.windows;
@@ -215,7 +215,7 @@ public class MinecraftUtil {
         return "1285241960000";
     }
 
-    private static enum OS {
+    public static enum OS {
 
         linux, solaris, windows, macos, unknown;
     }

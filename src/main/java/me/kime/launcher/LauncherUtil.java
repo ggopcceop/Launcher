@@ -55,6 +55,8 @@ public class LauncherUtil {
      * @throws InterruptedException
      */
     public static void start(String name) throws IOException, InterruptedException {
+        GameDownloadUtil.downloadJars();
+        
         String binFolder = MinecraftUtil.getBinFolder().getAbsolutePath();
         ArrayList params = new ArrayList();
         params.add("java");
