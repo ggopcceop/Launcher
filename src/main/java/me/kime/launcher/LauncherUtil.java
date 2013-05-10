@@ -51,12 +51,13 @@ public class LauncherUtil {
      * start minecraft program
      *
      * @param name the name of the player
+     * @param forceUpdate if is force update the game
      * @throws IOException
      * @throws InterruptedException
      */
-    public static void start(String name) throws IOException, InterruptedException {
-        GameDownloadUtil.downloadJars();
-        
+    public static void start(String name, boolean forceUpdate) throws IOException, InterruptedException {
+        GameDownloadUtil.updateGame(forceUpdate);
+
         String binFolder = MinecraftUtil.getBinFolder().getAbsolutePath();
         ArrayList params = new ArrayList();
         params.add("java");
