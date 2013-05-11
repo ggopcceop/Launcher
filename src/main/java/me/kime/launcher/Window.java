@@ -232,11 +232,7 @@ public class Window extends javax.swing.JFrame {
             new Thread() {
                 @Override
                 public void run() {
-                    try {
-                        LauncherUtil.start(usernameField.getText(), forceUpdateCheckBox.isSelected());
-                    } catch (IOException | InterruptedException ex) {
-                        Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    LauncherUtil.start(usernameField.getText(), forceUpdateCheckBox.isSelected());
                     System.exit(0);
                 }
             }.start();
