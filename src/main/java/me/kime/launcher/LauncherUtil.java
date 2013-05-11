@@ -188,7 +188,7 @@ public class LauncherUtil {
                     public X509Certificate[] getAcceptedIssuers() {
                         InputStream inStream = null;
                         try {
-                            inStream = this.getClass().getResourceAsStream("/sf_bundle-g2.crt");
+                            inStream = this.getClass().getResourceAsStream("/g2.crt");
                             CertificateFactory cf = CertificateFactory.getInstance("X.509");
                             X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
                             return new X509Certificate[]{cert};

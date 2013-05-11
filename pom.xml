@@ -54,11 +54,12 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>me.kime.launcher.Window</mainClass>
+                            <mainClass>me.kime.launcher.Window</mainClass>              
                         </manifest>
-                    </archive>
+                        <addMavenDescriptor>false</addMavenDescriptor> 
+                    </archive>                    
                 </configuration>
-            </plugin>      
+            </plugin>
         </plugins>
     </build>
     <dependencies>
