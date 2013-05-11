@@ -1,17 +1,11 @@
 package me.kime.launcher;
 
-import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -136,81 +130,24 @@ public class MinecraftUtil {
         return OS.unknown;
     }
 
-    public static String excutePost(String targetURL, String urlParameters) {
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URL(targetURL);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            connection.setRequestProperty("Content-Length", Integer.toString(urlParameters.getBytes().length));
-            connection.setRequestProperty("Content-Language", "en-US");
-
-            connection.setUseCaches(false);
-            connection.setDoInput(true);
-            connection.setDoOutput(true);
-            try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
-                wr.writeBytes(urlParameters);
-                wr.flush();
-            }
-
-            InputStream is = connection.getInputStream();
-            StringBuilder response;
-            try (BufferedReader rd = new BufferedReader(new InputStreamReader(is))) {
-                response = new StringBuilder();
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    response.append(line);
-                    response.append('\r');
-                }
-            }
-            String str1 = response.toString();
-            return str1;
-        } catch (Exception e) {
-            Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
-            return null;
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
-        }
-    }
-
     public static void resetVersion() {
-        DataOutputStream dos = null;
-        try {
-            File dir = new File(getWorkingDirectory() + File.separator + "bin" + File.separator);
-            File versionFile = new File(dir, "version");
-            dos = new DataOutputStream(new FileOutputStream(versionFile));
+        File versionFile = new File(getBinFolder(), "version");
+        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(versionFile))) {
             dos.writeUTF("0");
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(MinecraftUtil.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(MinecraftUtil.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                if (dos != null) {
-                    dos.close();
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(MinecraftUtil.class.getName()).log(Level.SEVERE, null, ex);
-            }
         }
     }
 
     public static String getFakeLatestVersion() {
-        try {
-            File dir = new File(getWorkingDirectory() + File.separator + "bin" + File.separator);
-            File file = new File(dir, "version");
-            String version;
-            try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
-                version = dis.readUTF();
-            }
+        File file = new File(getBinFolder(), "version");
+        try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
+            String version = dis.readUTF();
             if (version.equals("0")) {
                 return "1285241960000";
             }
-            return version;
         } catch (IOException ex) {
+            Logger.getLogger(MinecraftUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
         return "1285241960000";
     }
