@@ -186,24 +186,13 @@ public class LauncherUtil {
                 new X509TrustManager() {
                     @Override
                     public X509Certificate[] getAcceptedIssuers() {
-                        InputStream inStream = null;
-                        try {
-                            inStream = this.getClass().getResourceAsStream("/g2.crt");
+                        try (InputStream inStream = this.getClass().getResourceAsStream("/g2.crt")) {
                             CertificateFactory cf = CertificateFactory.getInstance("X.509");
                             X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
                             return new X509Certificate[]{cert};
-                        } catch (CertificateException ex) {
-                            Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (IOException | CertificateException ex) {
+                            Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
                             return null;
-                        } finally {
-                            try {
-                                if (inStream != null) {
-                                    inStream.close();
-                                }
-
-                            } catch (IOException ex) {
-                                Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
-                            }
                         }
                     }
 
@@ -226,18 +215,19 @@ public class LauncherUtil {
                 }
             };
             SSLContext sc = SSLContext.getInstance("SSL");
+
             sc.init(null, trustAllCerts, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
             String https_url = new StringBuilder().append("https://xki.me/auth/auth.php?user=").append(username).append("&pass=").append(sb.toString()).toString();
             URL url = new URL(https_url);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+
             if (con.getResponseCode() == 202) {
                 return true;
             } else {
                 return false;
             }
-
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException ex) {
             Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
             return false;
