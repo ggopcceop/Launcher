@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.security.InvalidKeyException;
 import java.security.KeyManagementException;
@@ -57,6 +59,8 @@ public class LauncherUtil {
      */
     public static void start(String name, boolean forceUpdate) throws IOException, InterruptedException {
         GameDownloadUtil.updateGame(forceUpdate);
+        String fs = File.separator;
+        String ps = File.pathSeparator;
 
         String binFolder = MinecraftUtil.getBinFolder().getAbsolutePath();
         ArrayList params = new ArrayList();
@@ -64,13 +68,14 @@ public class LauncherUtil {
         params.add("-Xms512m");
         params.add("-Xmx2G");
         params.add("-cp");
-        params.add("\"" + binFolder + "\\jinput.jar;" + binFolder + "\\lwjgl.jar;"
-                + binFolder + "\\lwjgl_util.jar;" + binFolder + "\\minecraft.jar\"");
-        params.add("-Djava.library.path=\"" + binFolder + "\\natives\"");
+        params.add(binFolder + fs + "minecraft.jar" + ps + binFolder + fs
+                + "lwjgl.jar" + ps + binFolder + fs + "lwjgl_util.jar" + ps
+                + binFolder + fs + "jinput.jar");
+        params.add("-Djava.library.path=" + binFolder + fs + "natives");
         params.add("net.minecraft.client.Minecraft");
         params.add(name);
         ProcessBuilder b = new ProcessBuilder(params);
-        Process p = b.start();
+        b.start();
     }
 
     /**

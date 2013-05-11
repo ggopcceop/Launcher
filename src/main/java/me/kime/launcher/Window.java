@@ -85,7 +85,7 @@ public class Window extends javax.swing.JFrame {
         );
 
         ((AbstractDocument) usernameField.getDocument()).setDocumentFilter(filter);
-        usernameField.setFont(new java.awt.Font("微软雅黑", 0, 12)); // NOI18N
+        usernameField.setFont(usernameField.getFont());
         usernameField.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         usernameField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -93,7 +93,7 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        LoginButton.setFont(new java.awt.Font("微软雅黑", 0, 12)); // NOI18N
+        LoginButton.setFont(LoginButton.getFont().deriveFont(LoginButton.getFont().getStyle() | java.awt.Font.BOLD, LoginButton.getFont().getSize()+1));
         LoginButton.setText("进入");
         LoginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -101,7 +101,7 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        forceUpdateCheckBox.setFont(new java.awt.Font("微软雅黑", 0, 12)); // NOI18N
+        forceUpdateCheckBox.setFont(forceUpdateCheckBox.getFont().deriveFont(forceUpdateCheckBox.getFont().getStyle() | java.awt.Font.BOLD, forceUpdateCheckBox.getFont().getSize()-2));
         forceUpdateCheckBox.setText("强制更新");
         forceUpdateCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -109,7 +109,7 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        usernameLabel.setFont(new java.awt.Font("微软雅黑", 0, 14)); // NOI18N
+        usernameLabel.setFont(usernameLabel.getFont().deriveFont(usernameLabel.getFont().getStyle() | java.awt.Font.BOLD));
         usernameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         usernameLabel.setText("用户名");
 
@@ -119,11 +119,11 @@ public class Window extends javax.swing.JFrame {
             }
         });
 
-        passworldLabel.setFont(new java.awt.Font("微软雅黑", 0, 14)); // NOI18N
+        passworldLabel.setFont(passworldLabel.getFont().deriveFont(passworldLabel.getFont().getStyle() | java.awt.Font.BOLD));
         passworldLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         passworldLabel.setText("密码");
 
-        rememberPasswordCheckBox.setFont(new java.awt.Font("微软雅黑", 0, 12)); // NOI18N
+        rememberPasswordCheckBox.setFont(rememberPasswordCheckBox.getFont().deriveFont(rememberPasswordCheckBox.getFont().getStyle() | java.awt.Font.BOLD, rememberPasswordCheckBox.getFont().getSize()-2));
         rememberPasswordCheckBox.setText("记住密码");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
