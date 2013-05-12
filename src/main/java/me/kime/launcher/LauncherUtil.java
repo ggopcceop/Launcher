@@ -9,18 +9,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
-import java.security.InvalidKeyException;
 import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
-import java.security.SignatureException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
@@ -36,7 +29,6 @@ import javax.imageio.ImageIO;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -97,7 +89,8 @@ public class LauncherUtil {
             BufferedImage head = img.getSubimage(width / 8, height / 4, width / 8, height / 4);
             BufferedImage hat = img.getSubimage(width / 8 * 5, height / 4, width / 8, height / 4);
 
-            BufferedImage combined = new BufferedImage(height / 4, width / 8, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage combined = new BufferedImage(height / 4, width / 8,
+                    BufferedImage.TYPE_INT_ARGB);
 
             // paint both images, preserving the alpha channels
             Graphics g = combined.getGraphics();
@@ -121,17 +114,12 @@ public class LauncherUtil {
     public static void readUsername(JTextField username, JPasswordField passworld) {
         try {
             File lastLogin = MinecraftUtil.getLoginFile();
-
             Cipher cipher = getCipher(2, "passwordfile");
-            DataInputStream dis;
-            if (cipher != null) {
-                dis = new DataInputStream(new CipherInputStream(new FileInputStream(lastLogin), cipher));
-            } else {
-                dis = new DataInputStream(new FileInputStream(lastLogin));
+            try (DataInputStream dis = new DataInputStream(new CipherInputStream(
+                    new FileInputStream(lastLogin), cipher))) {
+                username.setText(dis.readUTF());
+                passworld.setText(dis.readUTF());
             }
-            username.setText(dis.readUTF());
-            passworld.setText(dis.readUTF());
-            dis.close();
         } catch (Exception e) {
             Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
@@ -147,21 +135,16 @@ public class LauncherUtil {
     public static void writeUsername(String username, String passworld, boolean rememberPassworld) {
         try {
             File lastLogin = MinecraftUtil.getLoginFile();
-
             Cipher cipher = getCipher(1, "passwordfile");
-            DataOutputStream dos;
-            if (cipher != null) {
-                dos = new DataOutputStream(new CipherOutputStream(new FileOutputStream(lastLogin), cipher));
-            } else {
-                dos = new DataOutputStream(new FileOutputStream(lastLogin));
+            try (DataOutputStream dos = new DataOutputStream(new CipherOutputStream(
+                    new FileOutputStream(lastLogin), cipher))) {
+                dos.writeUTF(username);
+                if (rememberPassworld) {
+                    dos.writeUTF(passworld);
+                } else {
+                    dos.writeUTF("");
+                }
             }
-            dos.writeUTF(username);
-            if (rememberPassworld) {
-                dos.writeUTF(passworld);
-            } else {
-                dos.writeUTF("");
-            }
-            dos.close();
         } catch (Exception e) {
             Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
@@ -182,44 +165,15 @@ public class LauncherUtil {
             for (int i = 0; i < byteData.length; i++) {
                 sb.append(Integer.toString((byteData[i] & 0xFF) + 256, 16).substring(1));
             }
-            TrustManager[] trustAllCerts = {
-                new X509TrustManager() {
-                    @Override
-                    public X509Certificate[] getAcceptedIssuers() {
-                        try (InputStream inStream = this.getClass().getResourceAsStream("/g2.crt")) {
-                            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-                            X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
-                            return new X509Certificate[]{cert};
-                        } catch (IOException | CertificateException ex) {
-                            Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
-                            return null;
-                        }
-                    }
 
-                    @Override
-                    public void checkClientTrusted(X509Certificate[] xcs, String string) throws CertificateException {
-                        throw new CertificateException("no trusted Certificate");
-                    }
-
-                    @Override
-                    public void checkServerTrusted(X509Certificate[] xcs, String string) throws CertificateException {
-                        X509Certificate[] ca = getAcceptedIssuers();
-                        for (X509Certificate cert : xcs) {
-                            try {
-                                cert.verify(ca[0].getPublicKey());
-                            } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchProviderException | SignatureException ex) {
-                                throw new CertificateException("Certificate not trusted", ex);
-                            }
-                        }
-                    }
-                }
-            };
+            TrustManager[] trustAllCerts = {new KimeTrustManager()};
             SSLContext sc = SSLContext.getInstance("SSL");
 
             sc.init(null, trustAllCerts, new SecureRandom());
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
-            String https_url = new StringBuilder().append("https://xki.me/auth/auth.php?user=").append(username).append("&pass=").append(sb.toString()).toString();
+            String https_url = new StringBuilder().append("https://xki.me/auth/auth.php?user=")
+                    .append(username).append("&pass=").append(sb.toString()).toString();
             URL url = new URL(https_url);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 
@@ -229,7 +183,7 @@ public class LauncherUtil {
                 return false;
             }
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException ex) {
-            Logger.getLogger(Window.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
             return false;
         }
     }
@@ -240,7 +194,8 @@ public class LauncherUtil {
         random.nextBytes(salt);
         PBEParameterSpec pbeParamSpec = new PBEParameterSpec(salt, 5);
 
-        SecretKey pbeKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES").generateSecret(new PBEKeySpec(password.toCharArray()));
+        SecretKey pbeKey = SecretKeyFactory.getInstance("PBEWithMD5AndDES")
+                .generateSecret(new PBEKeySpec(password.toCharArray()));
         Cipher cipher = Cipher.getInstance("PBEWithMD5AndDES");
         cipher.init(mode, pbeKey, pbeParamSpec);
         return cipher;

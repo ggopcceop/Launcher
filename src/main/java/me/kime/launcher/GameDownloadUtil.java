@@ -22,7 +22,8 @@ import java.util.logging.Logger;
 public class GameDownloadUtil {
 
     private static final String HOST = "http://download.kime.co/";
-    private static final String[] gameFiles = {"lwjgl.jar", "jinput.jar", "lwjgl_util.jar", "minecraft.jar"};
+    private static final String[] gameFiles = {"lwjgl.jar", "jinput.jar",
+        "lwjgl_util.jar", "minecraft.jar"};
     private static int speed = 0;
     private static String downloadString = "";
     private static boolean isDone = false;
@@ -72,9 +73,10 @@ public class GameDownloadUtil {
     }
 
     private static void uncompressFile(String filename) {
+        File inFile = new File(MinecraftUtil.getNativesFolder(), filename);
+        File outFile = new File(MinecraftUtil.getNativesFolder(),
+                filename.replace(".lzma", ""));
         try {
-            File inFile = new File(MinecraftUtil.getNativesFolder(), filename);
-            File outFile = new File(MinecraftUtil.getNativesFolder(), filename.replace(".lzma", ""));
             LzmaAlone.decompress(inFile, outFile);
             try (JarFile jar = new JarFile(outFile)) {
                 Enumeration<JarEntry> entities = jar.entries();
@@ -92,11 +94,11 @@ public class GameDownloadUtil {
                     }
                 }
             }
-            inFile.delete();
-            outFile.delete();
         } catch (Exception ex) {
             Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
+        inFile.delete();
+        outFile.delete();
     }
 
     public static void downloadFile(String fileName, File folder) {
@@ -129,10 +131,12 @@ public class GameDownloadUtil {
     }
 
     public static boolean canPlayOffline() {
-        if ((!MinecraftUtil.getBinFolder().exists()) || (!MinecraftUtil.getBinFolder().isDirectory())) {
+        if ((!MinecraftUtil.getBinFolder().exists())
+                || (!MinecraftUtil.getBinFolder().isDirectory())) {
             return false;
         }
-        if ((!MinecraftUtil.getNativesFolder().exists()) || (!MinecraftUtil.getNativesFolder().isDirectory())) {
+        if ((!MinecraftUtil.getNativesFolder().exists())
+                || (!MinecraftUtil.getNativesFolder().isDirectory())) {
             return false;
         }
         if (MinecraftUtil.getBinFolder().list().length < 5) {

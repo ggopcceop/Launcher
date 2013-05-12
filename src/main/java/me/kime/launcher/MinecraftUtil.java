@@ -96,13 +96,15 @@ public class MinecraftUtil {
                 }
                 break;
             case 3:
-                workingDirectory = new File(userHome, "Library/Application Support/" + applicationName);
+                workingDirectory = new File(userHome, "Library/Application Support/"
+                        + applicationName);
                 break;
             default:
                 workingDirectory = new File(userHome, applicationName + '/');
         }
         if ((!workingDirectory.exists()) && (!workingDirectory.mkdirs())) {
-            throw new RuntimeException("The working directory could not be created: " + workingDirectory);
+            throw new RuntimeException("The working directory could not be created: "
+                    + workingDirectory);
         }
         return workingDirectory;
     }
