@@ -10,9 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.security.KeyManagementException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Random;
@@ -53,13 +51,18 @@ public class LauncherUtil {
         String binFolder = MinecraftUtil.getBinFolder().getAbsolutePath() + fs;
         ArrayList params = new ArrayList();
         params.add("java");
-        params.add("-Xms512m");
-        params.add("-Xmx2G");
+
+        if ("32".equals(System.getProperty("sun.arch.data.model"))) {
+            params.add("-Xmx512M");
+        } else {
+            params.add("-Xmx1G");
+        }
+
         params.add("-cp");
         params.add(binFolder + "minecraft.jar" + ps + binFolder + "lwjgl.jar"
                 + ps + binFolder + "lwjgl_util.jar" + ps + binFolder
                 + "jinput.jar");
-        params.add("-Djava.library.path=" + binFolder + fs + "natives");
+        params.add("-Djava.library.path=" + binFolder + "natives");
         params.add("net.minecraft.client.Minecraft");
         params.add(name);
         ProcessBuilder b = new ProcessBuilder(params);
@@ -115,11 +118,10 @@ public class LauncherUtil {
         try {
             File lastLogin = MinecraftUtil.getLoginFile();
             Cipher cipher = getCipher(2, "passwordfile");
-            try (DataInputStream dis = new DataInputStream(new CipherInputStream(
-                    new FileInputStream(lastLogin), cipher))) {
-                username.setText(dis.readUTF());
-                passworld.setText(dis.readUTF());
-            }
+            DataInputStream dis = new DataInputStream(new CipherInputStream(
+                    new FileInputStream(lastLogin), cipher));
+            username.setText(dis.readUTF());
+            passworld.setText(dis.readUTF());
         } catch (Exception e) {
             Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
@@ -136,17 +138,20 @@ public class LauncherUtil {
         try {
             File lastLogin = MinecraftUtil.getLoginFile();
             Cipher cipher = getCipher(1, "passwordfile");
-            try (DataOutputStream dos = new DataOutputStream(new CipherOutputStream(
-                    new FileOutputStream(lastLogin), cipher))) {
-                dos.writeUTF(username);
-                if (rememberPassworld) {
-                    dos.writeUTF(passworld);
-                } else {
-                    dos.writeUTF("");
-                }
+            DataOutputStream dos = new DataOutputStream(new CipherOutputStream(
+                    new FileOutputStream(lastLogin), cipher));
+            dos.writeUTF(username);
+            if (rememberPassworld) {
+                dos.writeUTF(passworld);
+            } else {
+                dos.writeUTF("");
+
+
             }
+
         } catch (Exception e) {
-            Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
+            Logger.getLogger(LauncherUtil.class
+                    .getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
     }
 
@@ -181,9 +186,13 @@ public class LauncherUtil {
                 return true;
             } else {
                 return false;
+
+
             }
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException ex) {
-            Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(LauncherUtil.class
+                    .getName()).log(Level.SEVERE, null, ex);
+
             return false;
         }
     }

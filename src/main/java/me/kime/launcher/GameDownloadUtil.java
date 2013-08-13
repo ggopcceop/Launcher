@@ -78,22 +78,22 @@ public class GameDownloadUtil {
                 filename.replace(".lzma", ""));
         try {
             LzmaAlone.decompress(inFile, outFile);
-            try (JarFile jar = new JarFile(outFile)) {
-                Enumeration<JarEntry> entities = jar.entries();
-                downloadString = "解压缩中";
-                while (entities.hasMoreElements()) {
-                    JarEntry entry = (JarEntry) entities.nextElement();
-                    if (!entry.isDirectory() && (entry.getName().indexOf('/') == -1)) {
-                        File file = new File(MinecraftUtil.getNativesFolder(), entry.getName());
-                        if ((!file.exists() || file.delete())) {
-                            try (ReadableByteChannel in = Channels.newChannel(jar.getInputStream(entry));
-                                    FileChannel out = new FileOutputStream(file).getChannel()) {
-                                out.transferFrom(in, 0, entry.getSize());
-                            }
-                        }
+
+            JarFile jar = new JarFile(outFile);
+            Enumeration<JarEntry> entities = jar.entries();
+            downloadString = "解压缩中";
+            while (entities.hasMoreElements()) {
+                JarEntry entry = (JarEntry) entities.nextElement();
+                if (!entry.isDirectory() && (entry.getName().indexOf('/') == -1)) {
+                    File file = new File(MinecraftUtil.getNativesFolder(), entry.getName());
+                    if ((!file.exists() || file.delete())) {
+                        ReadableByteChannel in = Channels.newChannel(jar.getInputStream(entry));
+                        FileChannel out = new FileOutputStream(file).getChannel();
+                        out.transferFrom(in, 0, entry.getSize());
                     }
                 }
             }
+
         } catch (Exception ex) {
             Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -109,17 +109,16 @@ public class GameDownloadUtil {
                 outFile.delete();
             }
             URLConnection connection = inFile.openConnection();
-            try (ReadableByteChannel source = Channels.newChannel(connection.getInputStream());
-                    FileChannel destination = new FileOutputStream(outFile).getChannel()) {
+            ReadableByteChannel source = Channels.newChannel(connection.getInputStream());
+            FileChannel destination = new FileOutputStream(outFile).getChannel();
 
-                long count = 0;
-                long size = connection.getContentLengthLong();
-                long startTime = System.currentTimeMillis();
-                while (count < size) {
-                    count += destination.transferFrom(source, count, 1 << 18);
-                    speed = (int) (count / (System.currentTimeMillis() - startTime));
-                    downloadString = "下载" + fileName + "中 @ " + speed + " KB/sec";
-                }
+            long count = 0;
+            long size = connection.getContentLengthLong();
+            long startTime = System.currentTimeMillis();
+            while (count < size) {
+                count += destination.transferFrom(source, count, 1 << 18);
+                speed = (int) (count / (System.currentTimeMillis() - startTime));
+                downloadString = "下载" + fileName + "中 @ " + speed + " KB/sec";
             }
         } catch (IOException ex) {
             Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);

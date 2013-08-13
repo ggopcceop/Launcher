@@ -134,7 +134,8 @@ public class MinecraftUtil {
 
     public static void resetVersion() {
         File versionFile = new File(getBinFolder(), "version");
-        try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(versionFile))) {
+        try {
+            DataOutputStream dos = new DataOutputStream(new FileOutputStream(versionFile));
             dos.writeUTF("0");
         } catch (IOException ex) {
             Logger.getLogger(MinecraftUtil.class.getName()).log(Level.SEVERE, null, ex);
@@ -143,7 +144,8 @@ public class MinecraftUtil {
 
     public static String getFakeLatestVersion() {
         File file = new File(getBinFolder(), "version");
-        try (DataInputStream dis = new DataInputStream(new FileInputStream(file))) {
+        try {
+            DataInputStream dis = new DataInputStream(new FileInputStream(file));
             String version = dis.readUTF();
             if (version.equals("0")) {
                 return "1285241960000";
