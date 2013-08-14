@@ -90,6 +90,7 @@ public class GameDownloadUtil {
                         ReadableByteChannel in = Channels.newChannel(jar.getInputStream(entry));
                         FileChannel out = new FileOutputStream(file).getChannel();
                         out.transferFrom(in, 0, entry.getSize());
+                        out.close();
                     }
                 }
             }
@@ -120,6 +121,8 @@ public class GameDownloadUtil {
                 speed = (int) (count / (System.currentTimeMillis() - startTime));
                 downloadString = "下载" + fileName + "中 @ " + speed + " KB/sec";
             }
+            
+            destination.close();
         } catch (IOException ex) {
             Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);
         }

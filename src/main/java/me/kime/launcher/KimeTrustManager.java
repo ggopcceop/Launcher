@@ -1,5 +1,6 @@
 package me.kime.launcher;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
@@ -20,9 +21,15 @@ public class KimeTrustManager implements X509TrustManager {
             InputStream inStream = this.getClass().getResourceAsStream("/g2.crt");
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
+            
+            inStream.close();
+            
             return new X509Certificate[]{cert};
         } catch (CertificateException ex) {
             Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (IOException ex) {
+            Logger.getLogger(KimeTrustManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }

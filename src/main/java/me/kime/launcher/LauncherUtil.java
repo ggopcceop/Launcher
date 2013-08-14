@@ -122,6 +122,8 @@ public class LauncherUtil {
                     new FileInputStream(lastLogin), cipher));
             username.setText(dis.readUTF());
             passworld.setText(dis.readUTF());
+            
+            dis.close();
         } catch (Exception e) {
             Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
@@ -148,6 +150,7 @@ public class LauncherUtil {
 
 
             }
+            dos.close();
 
         } catch (Exception e) {
             Logger.getLogger(LauncherUtil.class

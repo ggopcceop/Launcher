@@ -38,6 +38,9 @@ public class LzmaAlone {
         }
 
         outStream.flush();
+        
+        inStream.close();
+        outStream.close();
 
     }
 }
