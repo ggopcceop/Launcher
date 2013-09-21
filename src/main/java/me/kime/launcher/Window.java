@@ -15,7 +15,7 @@ import javax.swing.text.DocumentFilter;
  */
 public class Window extends javax.swing.JFrame {
 
-    private DocumentFilter filter;
+    private final DocumentFilter filter;
 
     /**
      * Creates new form Window
@@ -44,7 +44,11 @@ public class Window extends javax.swing.JFrame {
             rememberPasswordCheckBox.setSelected(true);
         }
         Image image = LauncherUtil.readAvatar(usernameField.getText());
-        avatarLabel.setIcon(new ImageIcon(image));
+        if (image != null) {
+            avatarLabel.setIcon(new ImageIcon(image));
+        } else {
+            avatarLabel.setIcon(new ImageIcon(LauncherUtil.readAvatar("littleKime")));
+        }
     }
 
     /**
@@ -228,13 +232,13 @@ public class Window extends javax.swing.JFrame {
     }//GEN-LAST:event_LoginButtonActionPerformed
 
     private void usernameFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameFieldKeyPressed
-        if(evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER){
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             this.LoginButton.doClick();
         }
     }//GEN-LAST:event_usernameFieldKeyPressed
 
     private void passwordFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordFieldKeyPressed
-        if(evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER){
+        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             this.LoginButton.doClick();
         }
     }//GEN-LAST:event_passwordFieldKeyPressed
@@ -246,7 +250,7 @@ public class Window extends javax.swing.JFrame {
 
         System.setProperty("awt.useSystemAAFontSettings", "on");
         System.setProperty("swing.aatext", "true");
-        
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
