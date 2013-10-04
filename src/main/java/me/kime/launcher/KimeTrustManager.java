@@ -21,9 +21,9 @@ public class KimeTrustManager implements X509TrustManager {
             InputStream inStream = this.getClass().getResourceAsStream("/g2.crt");
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             X509Certificate cert = (X509Certificate) cf.generateCertificate(inStream);
-            
+
             inStream.close();
-            
+
             return new X509Certificate[]{cert};
         } catch (CertificateException ex) {
             Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
@@ -44,12 +44,10 @@ public class KimeTrustManager implements X509TrustManager {
     public void checkServerTrusted(X509Certificate[] xcs, String string)
             throws CertificateException {
         X509Certificate[] ca = getAcceptedIssuers();
-        for (X509Certificate cert : xcs) {
-            try {
-                cert.verify(ca[0].getPublicKey());
-            } catch (Exception ex) {
-                throw new CertificateException("Certificate not trusted", ex);
-            }
+        try {
+            xcs[0].verify(ca[0].getPublicKey());
+        } catch (Exception ex) {
+            throw new CertificateException("Certificate not trusted", ex);
         }
     }
 }
