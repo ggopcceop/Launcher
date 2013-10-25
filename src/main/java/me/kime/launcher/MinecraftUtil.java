@@ -1,24 +1,21 @@
 package me.kime.launcher;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MinecraftUtil {
 
     private static File workDir = null;
-    private static File binDir = null;
-    private static File resourcesDis = null;
+    private static File KimeFolder = null;
+    private static File versionsFolder = null;    
+    private static File assetsFolder = null;
+    private static File nativesFolder = null;
+    private static File librariesFolder = null;
     private static File optionsFile = null;
     private static File lastloginFile = null;
     private static File savesDir = null;
     private static File tempFolder = null;
-    private static File nativesFolder = null;
+    
+    private static final long time = System.currentTimeMillis();
 
     public static File getWorkingDirectory() {
         if (workDir == null) {
@@ -27,18 +24,42 @@ public class MinecraftUtil {
         return workDir;
     }
 
-    public static File getBinFolder() {
-        if (binDir == null) {
-            binDir = new File(getWorkingDirectory(), "bin");
+    public static File getKimeFolder() {
+        if (KimeFolder == null) {
+            KimeFolder = new File(getVersionsFolder(), "Kime");
         }
-        return binDir;
+        return KimeFolder;
+    }
+    
+    public static File getVersionsFolder() {
+        if (versionsFolder == null) {
+            versionsFolder = new File(getWorkingDirectory(), "versions");
+        }
+        return versionsFolder;
     }
 
-    public static File getResourcesFolder() {
-        if (resourcesDis == null) {
-            resourcesDis = new File(getWorkingDirectory(), "resources");
+    public static File getAssetsFolder() {
+        if (assetsFolder == null) {
+            assetsFolder = new File(getWorkingDirectory(), "assets");
         }
-        return resourcesDis;
+        return assetsFolder;
+    }
+    
+    public static File getNativesFolder() {
+        if (nativesFolder == null) {
+            nativesFolder = new File(getKimeFolder(), "Kime-natives-" + time);
+            if(!nativesFolder.exists()){
+                nativesFolder.mkdirs();
+            }
+        }
+        return nativesFolder;
+    }
+    
+    public static File getLibrariesFolder() {
+        if (librariesFolder == null) {
+            librariesFolder = new File(getWorkingDirectory(), "libraries");
+        }
+        return librariesFolder;
     }
 
     public static File getOptionsFile() {
@@ -62,12 +83,7 @@ public class MinecraftUtil {
         return savesDir;
     }
 
-    public static File getNativesFolder() {
-        if (nativesFolder == null) {
-            nativesFolder = new File(getBinFolder(), "natives");
-        }
-        return nativesFolder;
-    }
+    
 
     public static File getTempFolder() {
         if (tempFolder == null) {
@@ -131,31 +147,6 @@ public class MinecraftUtil {
         }
         return OS.unknown;
     }
-
-    public static void resetVersion() {
-        File versionFile = new File(getBinFolder(), "version");
-        try {
-            DataOutputStream dos = new DataOutputStream(new FileOutputStream(versionFile));
-            dos.writeUTF("0");
-        } catch (IOException ex) {
-            Logger.getLogger(MinecraftUtil.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public static String getFakeLatestVersion() {
-        File file = new File(getBinFolder(), "version");
-        try {
-            DataInputStream dis = new DataInputStream(new FileInputStream(file));
-            String version = dis.readUTF();
-            if (version.equals("0")) {
-                return "1285241960000";
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(MinecraftUtil.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return "1285241960000";
-    }
-
     public static enum OS {
 
         linux, solaris, windows, macos, unknown;

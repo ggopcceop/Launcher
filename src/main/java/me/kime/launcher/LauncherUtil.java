@@ -13,6 +13,8 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,36 +40,64 @@ import javax.swing.JTextField;
 public class LauncherUtil {
 
     /**
-     * start minecraft program
+     * start minecraft program version 1.6 or after
      *
      * @param name the name of the player
      * @param forceUpdate if is force update the game
      */
     public static void start(String name, boolean forceUpdate) {
-        GameDownloadUtil.updateGame(forceUpdate);
+        FileUtil.cleanUpNatives();
+        FileUtil.extractNatives();
         String fs = File.separator;
         String ps = File.pathSeparator;
 
-        String binFolder = MinecraftUtil.getBinFolder().getAbsolutePath() + fs;
         ArrayList params = new ArrayList();
-        params.add("java");
+        params.add("javaw");
 
-        if ("32".equals(System.getProperty("sun.arch.data.model"))) {
-            params.add("-Xmx512M");
-        } else {
-            params.add("-Xmx1G");
-        }
+        params.add("-Dfml.ignoreInvalidMinecraftCertificates=true");
+        params.add("-Dfml.ignorePatchDiscrepancies=true");
+
+        params.add("-Djava.library.path=" + MinecraftUtil.getNativesFolder().getAbsolutePath());
 
         params.add("-cp");
-        params.add(binFolder + "minecraft.jar" + ps + binFolder + "lwjgl.jar"
-                + ps + binFolder + "lwjgl_util.jar" + ps + binFolder
-                + "jinput.jar");
-        params.add("-Djava.library.path=" + binFolder + "natives");
-        params.add("net.minecraft.client.Minecraft");
+        File lib = MinecraftUtil.getLibrariesFolder();
+        StringBuilder sb = new StringBuilder();
+        List<String> list = ConfigReader.getLibraries();
+        for (String s : list) {
+            sb.append(lib.getAbsoluteFile()).append(fs).append(s).append(ps);
+        }
+        sb.append(new File(MinecraftUtil.getKimeFolder(), "Kime.jar").getAbsolutePath());
+        params.add(sb.toString());
+
+        params.add("net.minecraft.launchwrapper.Launch");
+        params.add("--username");
         params.add(name);
+        params.add("--version");
+        params.add("Kime");
+        params.add("--gameDir");
+        params.add(MinecraftUtil.getWorkingDirectory().getAbsolutePath());
+        params.add("--assetsDir");
+        params.add(MinecraftUtil.getAssetsFolder().getAbsolutePath());
+        params.add("--tweakClass");
+        params.add("cpw.mods.fml.common.launcher.FMLTweaker");
+
+        for (Iterator it = params.iterator(); it.hasNext();) {
+            String s = (String) it.next();
+            System.out.println(s);
+        }
+
+        File commands = new File(MinecraftUtil.getWorkingDirectory() + fs + "Commands.txt");
+        File output = new File(MinecraftUtil.getWorkingDirectory() + fs + "ProcessLog.txt");
+        File errors = new File(MinecraftUtil.getWorkingDirectory() + fs + "ErrorLog.txt");
+
         ProcessBuilder b = new ProcessBuilder(params);
+
+        b.redirectInput(commands);
+        b.redirectError(errors);
+        b.redirectOutput(output);
+
         try {
-            b.start();
+            Process p = b.start();
         } catch (IOException ex) {
             Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -122,7 +152,7 @@ public class LauncherUtil {
                     new FileInputStream(lastLogin), cipher));
             username.setText(dis.readUTF());
             passworld.setText(dis.readUTF());
-            
+
             dis.close();
         } catch (Exception e) {
             Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
@@ -147,7 +177,6 @@ public class LauncherUtil {
                 dos.writeUTF(passworld);
             } else {
                 dos.writeUTF("");
-
 
             }
             dos.close();
@@ -189,7 +218,6 @@ public class LauncherUtil {
                 return true;
             } else {
                 return false;
-
 
             }
         } catch (Exception ex) {

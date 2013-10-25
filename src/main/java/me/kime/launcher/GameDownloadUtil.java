@@ -37,7 +37,7 @@ public class GameDownloadUtil {
     }
 
     public static void downloadJars() {
-        File folder = MinecraftUtil.getBinFolder();
+        File folder = MinecraftUtil.getNativesFolder();
         if (!folder.exists()) {
             folder.mkdir();
         }
@@ -133,33 +133,6 @@ public class GameDownloadUtil {
     }
 
     public static boolean canPlayOffline() {
-        if ((!MinecraftUtil.getBinFolder().exists())
-                || (!MinecraftUtil.getBinFolder().isDirectory())) {
-            return false;
-        }
-        if ((!MinecraftUtil.getNativesFolder().exists())
-                || (!MinecraftUtil.getNativesFolder().isDirectory())) {
-            return false;
-        }
-        if (MinecraftUtil.getBinFolder().list().length < 5) {
-            return false;
-        }
-        if (MinecraftUtil.getNativesFolder().list().length < 1) {
-            return false;
-        }
-        String[] bins = MinecraftUtil.getBinFolder().list();
-        for (String necessary : gameFiles) {
-            boolean isThere = false;
-            for (String found : bins) {
-                if (necessary.equalsIgnoreCase(found)) {
-                    isThere = true;
-                    break;
-                }
-            }
-            if (!isThere) {
-                return false;
-            }
-        }
         return true;
     }
 
