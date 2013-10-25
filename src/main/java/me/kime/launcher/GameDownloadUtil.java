@@ -1,6 +1,5 @@
 package me.kime.launcher;
 
-import SevenZip.LzmaAlone;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,9 +8,6 @@ import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Enumeration;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -73,33 +69,6 @@ public class GameDownloadUtil {
     }
 
     private static void uncompressFile(String filename) {
-        File inFile = new File(MinecraftUtil.getNativesFolder(), filename);
-        File outFile = new File(MinecraftUtil.getNativesFolder(),
-                filename.replace(".lzma", ""));
-        try {
-            LzmaAlone.decompress(inFile, outFile);
-
-            JarFile jar = new JarFile(outFile);
-            Enumeration<JarEntry> entities = jar.entries();
-            downloadString = "解压缩中";
-            while (entities.hasMoreElements()) {
-                JarEntry entry = (JarEntry) entities.nextElement();
-                if (!entry.isDirectory() && (entry.getName().indexOf('/') == -1)) {
-                    File file = new File(MinecraftUtil.getNativesFolder(), entry.getName());
-                    if ((!file.exists() || file.delete())) {
-                        ReadableByteChannel in = Channels.newChannel(jar.getInputStream(entry));
-                        FileChannel out = new FileOutputStream(file).getChannel();
-                        out.transferFrom(in, 0, entry.getSize());
-                        out.close();
-                    }
-                }
-            }
-
-        } catch (Exception ex) {
-            Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        inFile.delete();
-        outFile.delete();
     }
 
     public static void downloadFile(String fileName, File folder) {

@@ -92,12 +92,8 @@ public class LauncherUtil {
 
         ProcessBuilder b = new ProcessBuilder(params);
 
-        b.redirectInput(commands);
-        b.redirectError(errors);
-        b.redirectOutput(output);
-
         try {
-            Process p = b.start();
+            b.start();
         } catch (IOException ex) {
             Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
         }

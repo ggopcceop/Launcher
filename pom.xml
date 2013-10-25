@@ -27,6 +27,24 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.8</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeArtifactIds>json-simple</includeArtifactIds>
+                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.4</version>
                 <executions>
@@ -57,7 +75,10 @@
                             <mainClass>me.kime.launcher.Window</mainClass>              
                         </manifest>
                         <addMavenDescriptor>false</addMavenDescriptor> 
-                    </archive>                    
+                    </archive>                 
+                    <excludes>
+                        <exclude>META-INF/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
