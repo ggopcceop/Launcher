@@ -2,6 +2,10 @@ package me.kime.launcher;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -46,7 +50,15 @@ public class KimeTrustManager implements X509TrustManager {
         X509Certificate[] ca = getAcceptedIssuers();
         try {
             xcs[0].verify(ca[0].getPublicKey());
-        } catch (Exception ex) {
+        } catch (InvalidKeyException ex) {
+            throw new CertificateException("Certificate not trusted", ex);
+        } catch (NoSuchAlgorithmException ex) {
+            throw new CertificateException("Certificate not trusted", ex);
+        } catch (NoSuchProviderException ex) {
+            throw new CertificateException("Certificate not trusted", ex);
+        } catch (SignatureException ex) {
+            throw new CertificateException("Certificate not trusted", ex);
+        } catch (CertificateException ex) {
             throw new CertificateException("Certificate not trusted", ex);
         }
     }

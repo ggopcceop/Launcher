@@ -6,7 +6,7 @@ public class MinecraftUtil {
 
     private static File workDir = null;
     private static File KimeFolder = null;
-    private static File versionsFolder = null;    
+    private static File versionsFolder = null;
     private static File assetsFolder = null;
     private static File nativesFolder = null;
     private static File librariesFolder = null;
@@ -14,12 +14,15 @@ public class MinecraftUtil {
     private static File lastloginFile = null;
     private static File savesDir = null;
     private static File tempFolder = null;
-    
+
     private static final long time = System.currentTimeMillis();
 
     public static File getWorkingDirectory() {
         if (workDir == null) {
             workDir = getWorkingDirectory("minecraft");
+            if (!workDir.exists()) {
+                workDir.mkdirs();
+            }
         }
         return workDir;
     }
@@ -27,13 +30,19 @@ public class MinecraftUtil {
     public static File getKimeFolder() {
         if (KimeFolder == null) {
             KimeFolder = new File(getVersionsFolder(), "Kime");
+            if (!KimeFolder.exists()) {
+                KimeFolder.mkdirs();
+            }
         }
         return KimeFolder;
     }
-    
+
     public static File getVersionsFolder() {
         if (versionsFolder == null) {
             versionsFolder = new File(getWorkingDirectory(), "versions");
+            if (!versionsFolder.exists()) {
+                versionsFolder.mkdirs();
+            }
         }
         return versionsFolder;
     }
@@ -41,23 +50,29 @@ public class MinecraftUtil {
     public static File getAssetsFolder() {
         if (assetsFolder == null) {
             assetsFolder = new File(getWorkingDirectory(), "assets");
+            if (!assetsFolder.exists()) {
+                assetsFolder.mkdirs();
+            }
         }
         return assetsFolder;
     }
-    
+
     public static File getNativesFolder() {
         if (nativesFolder == null) {
             nativesFolder = new File(getKimeFolder(), "Kime-natives-" + time);
-            if(!nativesFolder.exists()){
+            if (!nativesFolder.exists()) {
                 nativesFolder.mkdirs();
             }
         }
         return nativesFolder;
     }
-    
+
     public static File getLibrariesFolder() {
         if (librariesFolder == null) {
             librariesFolder = new File(getWorkingDirectory(), "libraries");
+            if (!librariesFolder.exists()) {
+                librariesFolder.mkdirs();
+            }
         }
         return librariesFolder;
     }
@@ -82,8 +97,6 @@ public class MinecraftUtil {
         }
         return savesDir;
     }
-
-    
 
     public static File getTempFolder() {
         if (tempFolder == null) {
@@ -147,6 +160,7 @@ public class MinecraftUtil {
         }
         return OS.unknown;
     }
+
     public static enum OS {
 
         linux, solaris, windows, macos, unknown;

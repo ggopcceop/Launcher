@@ -22,12 +22,17 @@ public class ConfigReader {
     private static JSONObject json;
 
     static {
+        readJSON();
+    }
+
+    public static void readJSON() {
         File jsonFile = new File(MinecraftUtil.getKimeFolder(), "Kime.json");
         try {
             JSONParser parser = new JSONParser();
             json = (JSONObject) parser.parse(new FileReader(jsonFile));
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(ConfigReader.class.getName()).log(Level.SEVERE, null, ex);
+            GameDownloadUtil.downloadGame();
+            readJSON();
         } catch (IOException ex) {
             Logger.getLogger(ConfigReader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
@@ -85,6 +90,41 @@ public class ConfigReader {
     }
 
     public static List<String> getDownloadURL() {
-        return null;
+        JSONArray libs = (JSONArray) json.get("libraries");
+        char fs = File.separatorChar;
+        String os;
+        switch (MinecraftUtil.getPlatform()) {
+            case windows:
+                os = "windows";
+                break;
+            case macos:
+                os = "osx";
+                break;
+            default:
+                os = "linux";
+        }
+        List list = new LinkedList<String>();
+        for (Object obj : libs) {
+            JSONObject lib = (JSONObject) obj;
+
+            String name = (String) lib.get("name");
+            String[] split = name.split(":");
+            String replace = split[0].replace('.', fs);
+            String path;
+            if (lib.containsKey("extract")) {
+                String nativeString = (String) ((JSONObject) lib.get("natives")).get(os);
+                path = replace + fs + split[1] + fs + split[2] + fs
+                        + split[1] + '-' + split[2] + "-" + nativeString + ".jar";
+            } else {
+                path = replace + fs + split[1] + fs + split[2] + fs + split[1] + '-' + split[2] + ".jar";
+            }
+            if (lib.containsKey("url")) {
+                list.add(path + "!" + ((String) lib.get("url")) + path.replace(fs, '/'));
+            } else {
+                list.add(path + "!" + GameDownloadUtil.MJ_HOST + path.replace(fs, '/'));
+            }
+
+        }
+        return list;
     }
 }

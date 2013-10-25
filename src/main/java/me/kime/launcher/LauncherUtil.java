@@ -28,6 +28,7 @@ import javax.crypto.spec.PBEParameterSpec;
 import javax.imageio.ImageIO;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -46,6 +47,7 @@ public class LauncherUtil {
      * @param forceUpdate if is force update the game
      */
     public static void start(String name, boolean forceUpdate) {
+        GameDownloadUtil.updateGame(forceUpdate);
         FileUtil.cleanUpNatives();
         FileUtil.extractNatives();
         String fs = File.separator;
@@ -151,7 +153,6 @@ public class LauncherUtil {
 
             dis.close();
         } catch (Exception e) {
-            Logger.getLogger(LauncherUtil.class.getName()).log(java.util.logging.Level.SEVERE, null, e);
         }
     }
 
@@ -191,6 +192,7 @@ public class LauncherUtil {
      * @return if the auth succssce
      */
     public static boolean authUser(String username, String passworld) {
+        SSLSocketFactory defaultSSLSocketFactory = HttpsURLConnection.getDefaultSSLSocketFactory();
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] byteData = md.digest(passworld.getBytes());
@@ -203,6 +205,7 @@ public class LauncherUtil {
             SSLContext sc = SSLContext.getInstance("SSL");
 
             sc.init(null, trustAllCerts, new SecureRandom());
+
             HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
 
             String https_url = new StringBuilder().append("https://xki.me/auth/auth.php?user=")
@@ -221,6 +224,8 @@ public class LauncherUtil {
                     .getName()).log(Level.SEVERE, null, ex);
 
             return false;
+        } finally {
+            HttpsURLConnection.setDefaultSSLSocketFactory(defaultSSLSocketFactory);
         }
     }
 
