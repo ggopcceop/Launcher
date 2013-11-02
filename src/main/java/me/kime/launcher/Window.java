@@ -24,14 +24,14 @@ public class Window extends javax.swing.JFrame {
         filter = new DocumentFilter() {
             @Override
             public void insertString(DocumentFilter.FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
-                if (fb.getDocument().getLength() + string.length() <= 15 && string.matches("[a-zA-Z0-9_]+")) {
+                if (fb.getDocument().getLength() + string.length() <= 16 && string.matches("[a-zA-Z0-9_]+")) {
                     super.insertString(fb, offset, string, attr);
                 }
             }
 
             @Override
             public void replace(DocumentFilter.FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-                if (fb.getDocument().getLength() + text.length() <= 15 && text.matches("[a-zA-Z0-9_]+")) {
+                if (fb.getDocument().getLength() + text.length() <= 16 && text.matches("[a-zA-Z0-9_]+")) {
                     super.replace(fb, offset, length, text, attrs);
                 }
             }
