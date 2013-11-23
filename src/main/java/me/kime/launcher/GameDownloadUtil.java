@@ -122,7 +122,7 @@ public class GameDownloadUtil {
             File outFile = new File(folder, filename);
 
             if (outFile.exists()) {
-                return;
+                outFile.delete();
             }
 
             URLConnection connection = inFile.openConnection();
@@ -131,10 +131,10 @@ public class GameDownloadUtil {
 
             long count = 0;
             long size = connection.getContentLengthLong();
-            long startTime = System.nanoTime();
+            long startTime = System.currentTimeMillis();
             while (count < size) {
                 count += destination.transferFrom(source, count, 1 << 18);
-                speed = (int) ((count + 0.0 / (System.nanoTime() - startTime)) / 1000);
+                speed = (int) ((count + 0.0 / (System.currentTimeMillis() - startTime)) / 1000);
                 downloadString = "下载" + filename + "中 @ " + speed + " KB/sec";
             }
 
