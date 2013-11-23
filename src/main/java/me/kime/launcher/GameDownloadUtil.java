@@ -34,7 +34,7 @@ public class GameDownloadUtil {
 
     public static final String HOST = "http://download.kime.co/";
     public static final String MJ_HOST = "https://s3.amazonaws.com/Minecraft.Download/libraries/";
-    public static final String MJ_RESOURCE = "https://s3.amazonaws.com/Minecraft.Resources/";
+    public static final String MJ_RESOURCE = "http://resources.download.minecraft.net/";
 
     private static int speed = 0;
     private static String downloadString = "";
