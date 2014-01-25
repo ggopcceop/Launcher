@@ -26,7 +26,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.security.KeyManagementException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,9 +89,9 @@ public class LauncherUtil {
         }
         sb.append(new File(MinecraftUtil.getKimeFolder(), "Kime.jar").getAbsolutePath());
         params.add(sb.toString());
-        
+
         params.add(ConfigReader.getMainClass());
-        
+
         String args = ConfigReader.getArgument();
         args = args.replace("${auth_player_name}", name);
         args = args.replace("${version_name}", "Kime");
@@ -231,13 +233,18 @@ public class LauncherUtil {
             URL url = new URL(https_url);
             HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
 
-            if (con.getResponseCode() == 202) {
-                return true;
-            } else {
-                return false;
+            return con.getResponseCode() == 202;
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(LauncherUtil.class
+                    .getName()).log(Level.SEVERE, null, ex);
 
-            }
-        } catch (Exception ex) {
+            return false;
+        } catch (KeyManagementException ex) {
+            Logger.getLogger(LauncherUtil.class
+                    .getName()).log(Level.SEVERE, null, ex);
+
+            return false;
+        } catch (IOException ex) {
             Logger.getLogger(LauncherUtil.class
                     .getName()).log(Level.SEVERE, null, ex);
 
