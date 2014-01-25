@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Kime
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package me.kime.launcher;
 
 import java.io.File;
@@ -8,6 +24,8 @@ public class MinecraftUtil {
     private static File KimeFolder = null;
     private static File versionsFolder = null;
     private static File assetsFolder = null;
+    private static File indexFolder = null;
+    private static File objectFolder = null;
     private static File nativesFolder = null;
     private static File librariesFolder = null;
     private static File optionsFile = null;
@@ -55,6 +73,26 @@ public class MinecraftUtil {
             }
         }
         return assetsFolder;
+    }
+
+    public static File getIndexFolder() {
+        if (indexFolder == null) {
+            indexFolder = new File(getAssetsFolder(), "indexes");
+            if (!indexFolder.exists()) {
+                indexFolder.mkdirs();
+            }
+        }
+        return indexFolder;
+    }
+
+    public static File getObjectFolder() {
+        if (objectFolder == null) {
+            objectFolder = new File(getAssetsFolder(), "objects");
+            if (!objectFolder.exists()) {
+                objectFolder.mkdirs();
+            }
+        }
+        return objectFolder;
     }
 
     public static File getNativesFolder() {
@@ -159,6 +197,10 @@ public class MinecraftUtil {
             return OS.linux;
         }
         return OS.unknown;
+    }
+
+    public static String getArch() {
+        return System.getProperty("sun.arch.data.model");
     }
 
     public static enum OS {

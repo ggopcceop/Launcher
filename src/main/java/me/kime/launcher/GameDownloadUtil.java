@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Kime
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package me.kime.launcher;
 
 import java.io.Closeable;
@@ -6,7 +22,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.channels.Channels;
@@ -18,13 +33,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -33,7 +41,8 @@ import org.xml.sax.SAXException;
 public class GameDownloadUtil {
 
     public static final String HOST = "http://download.kime.co/";
-    public static final String MJ_HOST = "https://s3.amazonaws.com/Minecraft.Download/libraries/";
+    public static final String MJ_HOST = "https://libraries.minecraft.net/";
+    public static final String MJ_INDEX = "https://s3.amazonaws.com/Minecraft.Download/indexes/";
     public static final String MJ_RESOURCE = "http://resources.download.minecraft.net/";
 
     private static int speed = 0;
@@ -58,6 +67,13 @@ public class GameDownloadUtil {
 
     }
 
+    public static void downloadIndex() {
+        String version = ConfigReader.getBaseGameVersion();
+        File folder = MinecraftUtil.getIndexFolder();
+        String url = MJ_INDEX + version + ".json";
+        downloadFile(folder, url);
+    }
+
     public static void downloadLibraries() {
         List<String> urls = ConfigReader.getDownloadURL();
 
@@ -70,45 +86,15 @@ public class GameDownloadUtil {
     }
 
     public static void downloadResources() {
-        try {
-            URL resourceUrl = new URL(MJ_RESOURCE);
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            org.w3c.dom.Document doc = db.parse(resourceUrl.openConnection().getInputStream());
-            NodeList nodeLst = doc.getElementsByTagName("Contents");
-            for (int i = 0; i < nodeLst.getLength(); i++) {
-                Node node = nodeLst.item(i);
-                if (node.getNodeType() == 1) {
-                    Element element = (Element) node;
-                    String key = element.getElementsByTagName("Key").item(0).getChildNodes().item(0).getNodeValue();
-                    String etag = element.getElementsByTagName("ETag") != null ? element.getElementsByTagName("ETag").item(0).getChildNodes().item(0).getNodeValue() : "-";
-                    long size = Long.parseLong(element.getElementsByTagName("Size").item(0).getChildNodes().item(0).getNodeValue());
+        List<String> hashs = IndexReader.getResourceHash();
 
-                    if (size > 0L) {
-                        File file = new File(MinecraftUtil.getAssetsFolder(), key);
-                        if (etag.length() > 1) {
-                            etag = getEtag(etag);
-                            if ((file.isFile()) && (file.length() == size)) {
-                                String localMd5 = getMD5(file);
-                                if (localMd5.equals(etag)) {
-                                    continue;
-                                }
-                            }
-                        }
-
-                        downloadFile(file.getParentFile(), MJ_RESOURCE + key);
-                    }
-                }
-            }
-        } catch (MalformedURLException ex) {
-            Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXException ex) {
-            Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);
+        for (String hash : hashs) {
+            String subdir = hash.substring(0, 2);
+            String url = MJ_RESOURCE + subdir + "/" + hash;
+            File dir = new File(MinecraftUtil.getObjectFolder(), subdir);
+            downloadFile(dir, url);
         }
+
     }
 
     public static void downloadFile(File folder, String url) {

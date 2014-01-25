@@ -1,0 +1,23 @@
+[17:40:47] [main/INFO]: Setting user: littleKime
+[17:40:47] [main/INFO]: (Session ID is token:1:1)
+[17:40:48] [Client thread/INFO]: LWJGL Version: 2.9.1
+[17:40:48] [Client thread/INFO]: Reloading ResourceManager: Default
+[17:40:49] [Sound Library Loader/INFO]: Sound engine started
+[17:40:49] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[17:40:49] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[17:40:49] [MCO Availability Checker #1/ERROR]: Couldn't connect to Realms
+[17:40:54] [Client thread/INFO]: Reloading ResourceManager: Default
+[17:40:54] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[17:40:54] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[17:40:55] [Client thread/INFO]: Reloading ResourceManager: Default
+[17:40:55] [Client thread/INFO]: Created: 512x256 textures/blocks-atlas
+[17:40:55] [Sound Library Loader/INFO]: Sound engine started
+[17:40:55] [Client thread/INFO]: Created: 256x256 textures/items-atlas
+[17:40:56] [Sound Library Loader/INFO]: Sound engine started
+[17:41:00] [Client thread/INFO]: Connecting to mc.kime.co, 25565
+[17:41:00] [Client thread/INFO]: [CHAT]      
+[17:41:00] [Client thread/INFO]: [CHAT] littleKime joined the game.
+[17:41:00] [Client thread/INFO]: [CHAT] Hey there, littleKime!
+[17:41:00] [Client thread/INFO]: [CHAT] Welcome to Kime Server
+[17:41:04] [Client thread/INFO]: [CHAT] littleKime 刚刚获得了 [打开物品栏] 成就！
+[17:41:08] [Client thread/INFO]: [CHAT] <hcyhotboy> thx kime

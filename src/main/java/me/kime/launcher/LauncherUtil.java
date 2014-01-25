@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2014 Kime
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package me.kime.launcher;
 
 import java.awt.Graphics;
@@ -13,6 +29,7 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -70,30 +87,31 @@ public class LauncherUtil {
         }
         sb.append(new File(MinecraftUtil.getKimeFolder(), "Kime.jar").getAbsolutePath());
         params.add(sb.toString());
+        
+        params.add(ConfigReader.getMainClass());
+        
+        String args = ConfigReader.getArgument();
+        args = args.replace("${auth_player_name}", name);
+        args = args.replace("${version_name}", "Kime");
+        args = args.replace("${game_directory}", MinecraftUtil.getWorkingDirectory().getAbsolutePath());
+        args = args.replace("${assets_root}", MinecraftUtil.getAssetsFolder().getAbsolutePath());
+        args = args.replace("${assets_index_name}", ConfigReader.getBaseGameVersion());
+        args = args.replace("${auth_uuid}", "1");
+        args = args.replace("${auth_access_token}", "1");
+        args = args.replace("${user_properties}", "{}");
+        args = args.replace("${user_type}", "mojang");
 
-        params.add("net.minecraft.launchwrapper.Launch");
-        params.add("--username");
-        params.add(name);
-        params.add("--version");
-        params.add("Kime");
-        params.add("--gameDir");
-        params.add(MinecraftUtil.getWorkingDirectory().getAbsolutePath());
-        params.add("--assetsDir");
-        params.add(MinecraftUtil.getAssetsFolder().getAbsolutePath());
-        params.add("--tweakClass");
-        params.add("cpw.mods.fml.common.launcher.FMLTweaker");
+        params.addAll(Arrays.asList(args.split(" ")));
 
         for (Iterator it = params.iterator(); it.hasNext();) {
             String s = (String) it.next();
             System.out.println(s);
         }
 
-        File commands = new File(MinecraftUtil.getWorkingDirectory() + fs + "Commands.txt");
-        File output = new File(MinecraftUtil.getWorkingDirectory() + fs + "ProcessLog.txt");
-        File errors = new File(MinecraftUtil.getWorkingDirectory() + fs + "ErrorLog.txt");
+        File errors = new File(MinecraftUtil.getWorkingDirectory() + fs + "kime_launcher_error.log");
 
         ProcessBuilder b = new ProcessBuilder(params);
-
+        b.redirectError(errors);
         try {
             b.start();
         } catch (IOException ex) {
