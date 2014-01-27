@@ -14,25 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package me.kime.launcher;
+package me.kime.launcher.downloader;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import me.kime.launcher.config.ConfigReader;
+import me.kime.launcher.config.IndexReader;
+import me.kime.launcher.MinecraftUtil;
 
 /**
  *
@@ -45,33 +35,64 @@ public class GameDownloadUtil {
     public static final String MJ_INDEX = "https://s3.amazonaws.com/Minecraft.Download/indexes/";
     public static final String MJ_RESOURCE = "http://resources.download.minecraft.net/";
 
-    private static int speed = 0;
-    private static String downloadString = "";
     private static boolean isDone = false;
+    private static boolean startDownload = false;
+
+    public static boolean completeGame = false;
+    public static boolean completeIndex = false;
+    public static boolean completeLib = false;
+    public static boolean completeRes = false;
 
     public static void updateGame(boolean forceUpdate) {
         if (forceUpdate || !canPlayOffline()) {
+            //thread pool for maxmize cpu performce
+            ThreadDownLoader.init();
+            startDownload = true;
             downloadGame();
-            downloadLibraries();
-            downloadResources();
+
+            while (!completeGame || !completeIndex || !completeLib || !completeRes) {
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException ex) {
+
+                }
+            }
+
+            ThreadDownLoader.stop();
+            startDownload = false;
         }
         isDone = true;
     }
 
     public static void downloadGame() {
         File kime = MinecraftUtil.getKimeFolder();
-        String json = HOST + "Kime/Kime.json";
-        downloadFile(kime, json);
         String game = HOST + "Kime/Kime.jar";
         downloadFile(kime, game);
+        String json = HOST + "Kime/Kime.json";
+        downloadFile(kime, json, new Runnable() {
 
+            @Override
+            public void run() {
+                downloadIndex();
+                downloadLibraries();
+            }
+        });
+        completeGame = true;
     }
 
     public static void downloadIndex() {
         String version = ConfigReader.getBaseGameVersion();
         File folder = MinecraftUtil.getIndexFolder();
         String url = MJ_INDEX + version + ".json";
-        downloadFile(folder, url);
+        downloadFile(folder, url, new Runnable() {
+
+            @Override
+            public void run() {
+                downloadResources();
+            }
+        });
+        completeIndex = true;
+
     }
 
     public static void downloadLibraries() {
@@ -83,6 +104,8 @@ public class GameDownloadUtil {
             String[] split = url.split("!");
             downloadFile(new File(libFolder, split[0].substring(0, split[0].lastIndexOf(File.separatorChar))), split[1]);
         }
+
+        completeLib = true;
     }
 
     public static void downloadResources() {
@@ -94,44 +117,24 @@ public class GameDownloadUtil {
             File dir = new File(MinecraftUtil.getObjectFolder(), subdir);
             downloadFile(dir, url);
         }
+        completeRes = true;
+    }
 
+    public static void downloadFile(File folder, String url, Runnable run) {
+        ThreadDownLoader.addDownloadTask(new Downloadable(folder, url, run));
     }
 
     public static void downloadFile(File folder, String url) {
-        try {
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
-            URL inFile = new URL(url);
-            String[] split = url.split("/");
-            String filename = split[split.length - 1];
-            File outFile = new File(folder, filename);
-
-            if (outFile.exists()) {
-                outFile.delete();
-            }
-
-            URLConnection connection = inFile.openConnection();
-            ReadableByteChannel source = Channels.newChannel(connection.getInputStream());
-            FileChannel destination = new FileOutputStream(outFile).getChannel();
-
-            long count = 0;
-            long size = connection.getContentLengthLong();
-            long startTime = System.currentTimeMillis();
-            while (count < size) {
-                count += destination.transferFrom(source, count, 1 << 18);
-                speed = (int) ((count + 0.0 / (System.currentTimeMillis() - startTime)) / 1000);
-                downloadString = "下载" + filename + "中 @ " + speed + " KB/sec";
-            }
-
-            destination.close();
-        } catch (IOException ex) {
-            Logger.getLogger(GameDownloadUtil.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        ThreadDownLoader.addDownloadTask(new Downloadable(folder, url));
     }
 
-    public static int getSpeed() {
-        return speed;
+    public static String getDownloadString() {
+        if (startDownload) {
+            int speed = (int) DownloadSpeeddMonitor.getSpeed();
+            return "下载中, 噢噢噢! @ " + speed + " KB / sec";
+        } else {
+            return "";
+        }
     }
 
     public static boolean canPlayOffline() {
@@ -172,30 +175,6 @@ public class GameDownloadUtil {
         return isDone;
     }
 
-    public static String getDownloadString() {
-        return downloadString;
-    }
-
-    public static String getMD5(File file) {
-        DigestInputStream stream = null;
-        try {
-            stream = new DigestInputStream(new FileInputStream(file), MessageDigest.getInstance("MD5"));
-            byte[] buffer = new byte[65536];
-
-            while (stream.read(buffer) >= 1) {
-                stream.read(buffer);
-            }
-        } catch (IOException ignored) {
-            return null;
-        } catch (NoSuchAlgorithmException ignored) {
-            return null;
-        } finally {
-            closeSilently(stream);
-        }
-
-        return String.format("%1$032x", new Object[]{new BigInteger(1, stream.getMessageDigest().digest())});
-    }
-
     public static void closeSilently(Closeable closeable) {
         if (closeable != null) {
             try {
@@ -203,15 +182,5 @@ public class GameDownloadUtil {
             } catch (IOException localIOException) {
             }
         }
-    }
-
-    public static String getEtag(String etag) {
-        if (etag == null) {
-            etag = "-";
-        } else if ((etag.startsWith("\"")) && (etag.endsWith("\""))) {
-            etag = etag.substring(1, etag.length() - 1);
-        }
-
-        return etag;
     }
 }

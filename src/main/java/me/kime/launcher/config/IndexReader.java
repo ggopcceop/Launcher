@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package me.kime.launcher;
+package me.kime.launcher.config;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,7 +24,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.simple.JSONArray;
+import me.kime.launcher.MinecraftUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -47,8 +47,7 @@ public class IndexReader {
             JSONParser parser = new JSONParser();
             json = (JSONObject) parser.parse(new FileReader(jsonFile));
         } catch (FileNotFoundException ex) {
-            GameDownloadUtil.downloadIndex();
-            readJSON();
+            Logger.getLogger(ConfigReader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ConfigReader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {

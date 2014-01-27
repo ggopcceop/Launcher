@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package me.kime.launcher;
+package me.kime.launcher.config;
 
+import me.kime.launcher.downloader.GameDownloadUtil;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -24,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.kime.launcher.MinecraftUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -47,8 +49,7 @@ public class ConfigReader {
             JSONParser parser = new JSONParser();
             json = (JSONObject) parser.parse(new FileReader(jsonFile));
         } catch (FileNotFoundException ex) {
-            GameDownloadUtil.downloadGame();
-            readJSON();
+            Logger.getLogger(ConfigReader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(ConfigReader.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
@@ -154,8 +155,8 @@ public class ConfigReader {
     public static String getArgument() {
         return (String) json.get("minecraftArguments");
     }
-    
-    public static String getMainClass(){
+
+    public static String getMainClass() {
         return (String) json.get("mainClass");
     }
 }

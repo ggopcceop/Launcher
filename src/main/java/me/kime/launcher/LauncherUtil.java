@@ -16,6 +16,8 @@
  */
 package me.kime.launcher;
 
+import me.kime.launcher.config.ConfigReader;
+import me.kime.launcher.downloader.GameDownloadUtil;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -59,6 +61,8 @@ import javax.swing.JTextField;
  */
 public class LauncherUtil {
 
+    private static boolean isStart = false;
+
     /**
      * start minecraft program version 1.6 or after
      *
@@ -66,62 +70,65 @@ public class LauncherUtil {
      * @param forceUpdate if is force update the game
      */
     public static void start(String name, boolean forceUpdate) {
-        GameDownloadUtil.updateGame(forceUpdate);
-        FileUtil.cleanUpNatives();
-        FileUtil.extractNatives();
-        String fs = File.separator;
-        String ps = File.pathSeparator;
+        if (!isStart) {
+            isStart = true;
+            GameDownloadUtil.updateGame(forceUpdate);
+            FileUtil.cleanUpNatives();
+            FileUtil.extractNatives();
+            String fs = File.separator;
+            String ps = File.pathSeparator;
 
-        ArrayList params = new ArrayList();
-        params.add("javaw");
+            ArrayList params = new ArrayList();
+            params.add("javaw");
 
-        params.add("-Dfml.ignoreInvalidMinecraftCertificates=true");
-        params.add("-Dfml.ignorePatchDiscrepancies=true");
+            params.add("-Dfml.ignoreInvalidMinecraftCertificates=true");
+            params.add("-Dfml.ignorePatchDiscrepancies=true");
 
-        params.add("-Djava.library.path=" + MinecraftUtil.getNativesFolder().getAbsolutePath());
+            params.add("-Djava.library.path=" + MinecraftUtil.getNativesFolder().getAbsolutePath());
 
-        params.add("-cp");
-        File lib = MinecraftUtil.getLibrariesFolder();
-        StringBuilder sb = new StringBuilder();
-        List<String> list = ConfigReader.getLibraries();
-        for (String s : list) {
-            sb.append(lib.getAbsoluteFile()).append(fs).append(s).append(ps);
-        }
-        sb.append(new File(MinecraftUtil.getKimeFolder(), "Kime.jar").getAbsolutePath());
-        params.add(sb.toString());
+            params.add("-cp");
+            File lib = MinecraftUtil.getLibrariesFolder();
+            StringBuilder sb = new StringBuilder();
+            List<String> list = ConfigReader.getLibraries();
+            for (String s : list) {
+                sb.append(lib.getAbsoluteFile()).append(fs).append(s).append(ps);
+            }
+            sb.append(new File(MinecraftUtil.getKimeFolder(), "Kime.jar").getAbsolutePath());
+            params.add(sb.toString());
 
-        params.add(ConfigReader.getMainClass());
+            params.add(ConfigReader.getMainClass());
 
-        String args = ConfigReader.getArgument();
-        args = args.replace("${auth_player_name}", name);
-        args = args.replace("${version_name}", "Kime");
-        args = args.replace("${game_directory}", MinecraftUtil.getWorkingDirectory().getAbsolutePath());
-        args = args.replace("${assets_root}", MinecraftUtil.getAssetsFolder().getAbsolutePath());
-        args = args.replace("${assets_index_name}", ConfigReader.getBaseGameVersion());
-        args = args.replace("${auth_uuid}", "1");
-        args = args.replace("${auth_access_token}", "1");
-        args = args.replace("${user_properties}", "{}");
-        args = args.replace("${user_type}", "mojang");
+            String args = ConfigReader.getArgument();
+            args = args.replace("${auth_player_name}", name);
+            args = args.replace("${version_name}", "Kime");
+            args = args.replace("${game_directory}", MinecraftUtil.getWorkingDirectory().getAbsolutePath());
+            args = args.replace("${assets_root}", MinecraftUtil.getAssetsFolder().getAbsolutePath());
+            args = args.replace("${assets_index_name}", ConfigReader.getBaseGameVersion());
+            args = args.replace("${auth_uuid}", "1");
+            args = args.replace("${auth_access_token}", "1");
+            args = args.replace("${user_properties}", "{}");
+            args = args.replace("${user_type}", "mojang");
 
-        params.addAll(Arrays.asList(args.split(" ")));
+            params.addAll(Arrays.asList(args.split(" ")));
 
-        for (Iterator it = params.iterator(); it.hasNext();) {
-            String s = (String) it.next();
-            System.out.println(s);
-        }
+            for (Iterator it = params.iterator(); it.hasNext();) {
+                String s = (String) it.next();
+                System.out.println(s);
+            }
 
-        File errors = new File(MinecraftUtil.getWorkingDirectory() + fs + "kime_launcher_error.log");
+            File errors = new File(MinecraftUtil.getWorkingDirectory() + fs + "kime_launcher_error.log");
 
-        ProcessBuilder b = new ProcessBuilder(params);
-        
-        //work directory should be in minecraft directory
-        b.directory(MinecraftUtil.getWorkingDirectory());
-        
-        b.redirectError(errors);
-        try {
-            b.start();
-        } catch (IOException ex) {
-            Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
+            ProcessBuilder b = new ProcessBuilder(params);
+
+            //work directory should be in minecraft directory
+            b.directory(MinecraftUtil.getWorkingDirectory());
+
+            b.redirectError(errors);
+            try {
+                b.start();
+            } catch (IOException ex) {
+                Logger.getLogger(LauncherUtil.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 

@@ -16,6 +16,7 @@
  */
 package me.kime.launcher;
 
+import me.kime.launcher.config.ConfigReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class FileUtil {
                 Enumeration<JarEntry> entities = jar.entries();
                 while (entities.hasMoreElements()) {
                     JarEntry entry = (JarEntry) entities.nextElement();
-                    if (!entry.isDirectory() && (entry.getName().indexOf('/') == -1)) {
+                    if (!entry.isDirectory() && (!entry.getName().contains("/"))) {
                         File file = new File(MinecraftUtil.getNativesFolder(), entry.getName());
                         if ((!file.exists() || file.delete())) {
                             ReadableByteChannel in = Channels.newChannel(jar.getInputStream(entry));
