@@ -113,6 +113,10 @@ public class LauncherUtil {
         File errors = new File(MinecraftUtil.getWorkingDirectory() + fs + "kime_launcher_error.log");
 
         ProcessBuilder b = new ProcessBuilder(params);
+        
+        //work directory should be in minecraft directory
+        b.directory(MinecraftUtil.getWorkingDirectory());
+        
         b.redirectError(errors);
         try {
             b.start();
