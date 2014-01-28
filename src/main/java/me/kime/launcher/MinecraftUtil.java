@@ -207,4 +207,15 @@ public class MinecraftUtil {
 
         linux, solaris, windows, macos, unknown;
     }
+
+    public static String getJavaDir() {
+        String separator = System.getProperty("file.separator");
+        String path = System.getProperty("java.home") + separator + "bin" + separator;
+
+        if ((getPlatform() == OS.windows) && (new File(path + "javaw.exe").isFile())) {
+            return path + "javaw.exe";
+        }
+
+        return path + "java";
+    }
 }

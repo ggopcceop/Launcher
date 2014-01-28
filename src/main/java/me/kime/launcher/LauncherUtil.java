@@ -79,7 +79,7 @@ public class LauncherUtil {
             String ps = File.pathSeparator;
 
             ArrayList params = new ArrayList();
-            params.add("javaw");
+            params.add(MinecraftUtil.getJavaDir());
 
             params.add("-Dfml.ignoreInvalidMinecraftCertificates=true");
             params.add("-Dfml.ignorePatchDiscrepancies=true");
