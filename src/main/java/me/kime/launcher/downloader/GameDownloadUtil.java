@@ -69,7 +69,7 @@ public class GameDownloadUtil {
         String game = HOST + "Kime/Kime.jar";
         downloadFile(kime, game);
         String json = HOST + "Kime/Kime.json";
-        downloadFile(kime, json, new Runnable() {
+        downloadFile(kime, json, null, new Runnable() {
 
             @Override
             public void run() {
@@ -84,7 +84,7 @@ public class GameDownloadUtil {
         String version = ConfigReader.getBaseGameVersion();
         File folder = MinecraftUtil.getIndexFolder();
         String url = MJ_INDEX + version + ".json";
-        downloadFile(folder, url, new Runnable() {
+        downloadFile(folder, url, null, new Runnable() {
 
             @Override
             public void run() {
@@ -115,13 +115,13 @@ public class GameDownloadUtil {
             String subdir = hash.substring(0, 2);
             String url = MJ_RESOURCE + subdir + "/" + hash;
             File dir = new File(MinecraftUtil.getObjectFolder(), subdir);
-            downloadFile(dir, url);
+            downloadFile(dir, url, hash, null);
         }
         completeRes = true;
     }
 
-    public static void downloadFile(File folder, String url, Runnable run) {
-        ThreadDownLoader.addDownloadTask(new Downloadable(folder, url, run));
+    public static void downloadFile(File folder, String url, String sum, Runnable run) {
+        ThreadDownLoader.addDownloadTask(new Downloadable(folder, url, sum, run));
     }
 
     public static void downloadFile(File folder, String url) {

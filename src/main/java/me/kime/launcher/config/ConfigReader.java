@@ -149,7 +149,7 @@ public class ConfigReader {
     }
 
     public static String getBaseGameVersion() {
-        return (String) json.get("id");
+        return (String) json.get("assets");
     }
 
     public static String getArgument() {

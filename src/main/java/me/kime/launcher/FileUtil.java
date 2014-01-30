@@ -71,8 +71,8 @@ public class FileUtil {
         }
     }
 
-    private static boolean deleteDirectory(File directory) {
-        if (directory.exists()) {
+    public static boolean deleteDirectory(File directory) {
+        if (directory.exists() && directory.isDirectory()) {
             File[] files = directory.listFiles();
             if (null != files) {
                 for (File file : files) {
