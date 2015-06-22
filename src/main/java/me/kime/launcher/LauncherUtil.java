@@ -28,10 +28,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.security.KeyManagementException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -48,9 +46,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 import javax.imageio.ImageIO;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -232,13 +228,6 @@ public class LauncherUtil {
                 sb.append(Integer.toString((byteData[i] & 0xFF) + 256, 16).substring(1));
             }
 
-            TrustManager[] trustAllCerts = {new KimeTrustManager()};
-            SSLContext sc = SSLContext.getInstance("SSL");
-
-            sc.init(null, trustAllCerts, new SecureRandom());
-
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
             String https_url = new StringBuilder().append("https://xki.me/auth/auth.php?user=")
                     .append(username).append("&pass=").append(sb.toString()).toString();
             URL url = new URL(https_url);
@@ -246,11 +235,6 @@ public class LauncherUtil {
 
             return con.getResponseCode() == 202;
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(LauncherUtil.class
-                    .getName()).log(Level.SEVERE, null, ex);
-
-            return false;
-        } catch (KeyManagementException ex) {
             Logger.getLogger(LauncherUtil.class
                     .getName()).log(Level.SEVERE, null, ex);
 
